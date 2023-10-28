@@ -3,7 +3,7 @@ const express = require("express");
 const ejs = require("ejs");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const encrypt = require("mongoose-encryption");
+const md5 = require("md5");
 const User = require("./model/user");
 
 const app = express();
@@ -32,7 +32,7 @@ app.get("/register", function(req, res){
 app.post("/register", function(req, res){
     const newUser = new User({
         email: req.body.username,
-        password: req.body.password
+        password: md5(req.body.password)
     });
 
     newUser.save().then(function(results){
@@ -49,7 +49,7 @@ app.post("/login", function(req, res){
     User.findOne({email: req.body.username}).then(function(foundResult){
         if(foundResult)
         {
-            if(foundResult.password === req.body.password)
+            if(foundResult.password === md5(req.body.password))
             {
                 res.render("secrets");
             }
